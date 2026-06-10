@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit.components.v1 as components
 import urllib.request
+import urllib.parse
 import xml.etree.ElementTree as ET
 
 # 1. ตั้งค่าหน้าเว็บ
@@ -168,11 +169,14 @@ if app_mode == "📈 โหมดการลงทุน (Wealth Allocation)":
             st.markdown("### 🇹🇭 ข่าวสดเศรษฐกิจ & การเมืองโลก (ภาษาไทย)")
             st.caption("🔥 ดักจับคีย์เวิร์ด: ทรัมป์, น้ำมัน, สงคราม, เศรษฐกิจโลก (ดึงข้อมูลตรงจาก Google News TH)")
             
-            # ระบบดึงข่าวภาษาไทยแบบ Real-time
+            # ระบบดึงข่าวภาษาไทยแบบ Real-time (แก้ไข URL Encoding แล้ว)
             try:
-                # คีย์เวิร์ดเน้นเรื่องที่นิวต้องการตามให้ทัน
-                url = "https://news.google.com/rss/search?q=เศรษฐกิจโลก+OR+ทรัมป์+OR+น้ำมัน+OR+สงคราม&hl=th&gl=TH&ceid=TH:th"
-                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                # แปลงภาษาไทยให้เป็น URL format ก่อนส่งไป Google เพื่อป้องกันการโดนบล็อก
+                query = urllib.parse.quote("เศรษฐกิจโลก OR ทรัมป์ OR น้ำมัน OR สงคราม")
+                url = f"https://news.google.com/rss/search?q={query}&hl=th&gl=TH&ceid=TH:th"
+                
+                # จำลองตัวเองว่าเป็นเบราว์เซอร์ปกติ (ป้องกันการโดนเตะ)
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
                 response = urllib.request.urlopen(req)
                 xml_data = response.read()
                 root = ET.fromstring(xml_data)
@@ -188,7 +192,7 @@ if app_mode == "📈 โหมดการลงทุน (Wealth Allocation)":
                     st.markdown(f"<div class='news-box'><b><a href='{link}' target='_blank' style='color:#4e2a84; text-decoration:none;'>🚨 {title}</a></b><br><small style='color:gray;'>🕒 ประกาศเมื่อ: {pubDate}</small></div>", unsafe_allow_html=True)
                     count += 1
             except Exception as e:
-                st.error("ไม่สามารถโหลดข่าวภาษาไทยได้ในขณะนี้ กรุณาลองใหม่ภายหลัง")
+                st.error(f"ไม่สามารถโหลดข่าวภาษาไทยได้ในขณะนี้ กรุณาลองใหม่ภายหลัง ({e})")
 
         with colB:
             st.markdown("### 🗺️ แผนที่ความร้อนตลาด (S&P500)")
