@@ -11,55 +11,325 @@ import xml.etree.ElementTree as ET
 # 1. ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="✨ RM New x Ae 💕 Phi Vic 🐱", layout="wide", page_icon="💜")
 
-# CSS ตกแต่ง
 st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
-    .fund-card { background-color: #ffffff; padding: 20px; border-radius: 12px; border-left: 6px solid #4e2a84; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;}
+    .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 4px solid #4e2a84; }
+    h1, h2, h3 { color: #4e2a84; }
     .script-box { background-color: #f3eef9; padding: 25px; border-radius: 12px; border-left: 6px solid #4e2a84; margin-bottom: 20px; font-size: 16px; line-height: 1.8;}
+    .fwd-box { background-color: #fff0e6; padding: 25px; border-radius: 12px; border-left: 6px solid #e87722; margin-bottom: 20px; font-size: 16px; line-height: 1.8;}
+    .news-box { background-color: #ffffff; padding: 15px; border-radius: 8px; border-left: 4px solid #d9534f; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
     </style>
     """, unsafe_allow_html=True)
 
-# แถบเมนูด้านข้าง
+# --- แถบเมนูด้านข้าง ---
 st.sidebar.markdown("## 💜 SCB FIRST & FWD")
-app_mode = st.sidebar.radio("เลือกโหมด:", ["📈 โหมดการลงทุน (SCB FIRST)", "🛡️ โหมดประกัน FWD"])
+st.sidebar.title("🗂️ โหมดการทำงาน")
+app_mode = st.sidebar.radio("เลือกโหมดสำหรับให้บริการลูกค้า:", 
+                            ["📈 โหมดการลงทุน (SCB FIRST Allocation)", "🛡️ โหมดประกันสุขภาพ/ชีวิต (FWD)"])
 
-if app_mode == "📈 โหมดการลงทุน (SCB FIRST)":
-    st.title("✨ ระบบบริหารพอร์ต SCB FIRST")
-    
-    # -----------------------------------------------------
-    # ปรับปรุง: คลังข้อมูลกองทุน SCB แบบเต็มสูบ
-    # -----------------------------------------------------
-    st.subheader("🏦 คลังข้อมูลกองทุนรวม SCBAM (Pitching Guide)")
-    
-    fund_options = {
-        "SCBS&P500": {"นโยบาย": "เน้นลงทุนในดัชนี S&P 500 สหรัฐฯ (500 บริษัทที่ใหญ่ที่สุด)", "ความเสี่ยง": "ระดับ 6 (สูง)", "จุดเด่น": "เป็น Core Portfolio ที่สร้างการเติบโตระยะยาว"},
-        "SCBNDQ (Nasdaq 100)": {"นโยบาย": "เน้นหุ้นเทคโนโลยีชั้นนำ 100 ตัวในสหรัฐฯ", "ความเสี่ยง": "ระดับ 6 (สูง)", "จุดเด่น": "โอกาสเติบโตสูงจาก AI และนวัตกรรมโลก"},
-        "SCBSEMI": {"นโยบาย": "ลงทุนในกลุ่มเซมิคอนดักเตอร์และ AI", "ความเสี่ยง": "ระดับ 7 (สูงมาก)", "จุดเด่น": "กระดูกสันหลังของ AI ยุคใหม่"},
-        "SCBCE (หุ้นจีน)": {"นโยบาย": "ลงทุนในหุ้นจีนขนาดใหญ่ที่จดทะเบียนในตลาดต่างประเทศ", "ความเสี่ยง": "ระดับ 6 (สูง)", "จุดเด่น": "Valuation จีนตอนนี้ถูกมาก น่าสะสม"},
-        "SCBDV (หุ้นไทยปันผล)": {"นโยบาย": "เน้นหุ้นไทยพื้นฐานดีที่จ่ายปันผลสม่ำเสมอ", "ความเสี่ยง": "ระดับ 6 (สูง)", "จุดเด่น": "เน้นสร้าง Cash Flow กระแสเงินสด"}
-    }
+st.sidebar.divider()
+st.sidebar.caption("👨‍💻 พัฒนาโดย: เอ้ & นิว (มีพี่วิคเหมียว 🐱 คุมระบบ)")
 
-    selected_fund = st.selectbox("เลือกกองทุนเพื่อดูรายละเอียด:", list(fund_options.keys()))
+# ==========================================
+# โหมดที่ 1: การลงทุน (Wealth & Investment)
+# ==========================================
+if app_mode == "📈 โหมดการลงทุน (SCB FIRST Allocation)":
     
-    # แสดงข้อมูลกองทุนแบบสวยๆ
-    fund = fund_options[selected_fund]
-    st.markdown(f"""
-        <div class="fund-card">
-            <h3>{selected_fund}</h3>
-            <p><b>นโยบาย:</b> {fund['นโยบาย']}</p>
-            <p><b>ระดับความเสี่ยง:</b> {fund['ความเสี่ยง']}</p>
-            <p><b>จุดเด่นสำหรับ FIRST:</b> {fund['จุดเด่น']}</p>
+    # 1. ริบบิ้นราคาหุ้นวิ่งๆ (Ticker Tape)
+    components.html(
+        """
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+          {
+          "symbols": [
+            {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+            {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+            {"proName": "FX_IDC:THBUSD", "title": "USD/THB (บาท)"},
+            {"proName": "OANDA:XAUUSD", "title": "Gold (ทองคำ)"},
+            {"description": "WTI Crude", "proName": "OANDA:WTICOUSD"}
+          ],
+          "showSymbolLogo": true, "colorTheme": "light", "isTransparent": true, "displayMode": "adaptive", "locale": "th_TH"
+          }
+          </script>
         </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("### 🎙️ สคริปต์เสนอขายสำหรับลูกค้า SCB FIRST")
-    script = f"พี่คะ สำหรับกองทุน <b>{selected_fund}</b> ตัวนี้นะคะ นิวประเมินแล้วว่าเหมาะกับพอร์ตของพี่มากค่ะ เพราะ {fund['จุดเด่น']} ถ้าพี่อยากปรับสัดส่วนการลงทุนเพื่อรับโอกาสในตลาดนี้ นิวแนะนำให้เราลองแบ่งเงินเข้ามาเพิ่มสัดส่วนตัวนี้ดูนะคะ นิวช่วยทำจองผ่านแอป SCB EASY ให้พี่เดี๋ยวนี้เลยค่ะ"
-    st.markdown(f"<div class='script-box'>{script}</div>", unsafe_allow_html=True)
-    
-    st.divider()
-    st.info("💡 หมายเหตุ: ข้อมูลกองทุนเป็นข้อมูลสรุปเบื้องต้น พี่เอ้สามารถอัปเดตสัดส่วนลงทุน (Asset Allocation) ตามความเหมาะสมของลูกค้าแต่ละท่านได้เลยค่ะ")
+        """, height=75
+    )
 
+    st.title("✨ RM New x Ae 💖: ระบบจัดพอร์ต SCB FIRST")
+    
+    # แบ่งหน้าจอเป็น 3 แท็บ
+    tab1, tab2, tab3 = st.tabs(["🎯 จัดพอร์ตรายตัว", "📰 ข่าวสารภาษาไทย & เรดาร์ตลาด", "💱 ค่าเงินบาท & ปฏิทิน"])
+
+    # ------------------------------------
+    # แท็บที่ 1: วิเคราะห์รายตัว 
+    # ------------------------------------
+    with tab1:
+        with st.expander("🎯 กดตรงนี้เพื่อเปิดระบบสแกนหาสินทรัพย์น่าช้อนซื้อ (Quick Scan)"):
+            if st.button("🔍 เริ่มสแกนเดี๋ยวนี้", use_container_width=True):
+                with st.spinner('พี่วิคกำลังดมกลิ่นหาจังหวะเข้า...'):
+                    scan_list = {"PTT":"PTT.BK", "AOT":"AOT.BK", "CPALL":"CPALL.BK", "SPY":"SPY", "QQQ":"QQQ", "GOLD":"XAUUSD=X"}
+                    recommended = []
+                    for name, sym in scan_list.items():
+                        try:
+                            tk = yf.Ticker(sym)
+                            hist = tk.history(period="1mo")
+                            if not hist.empty:
+                                delta = hist['Close'].diff()
+                                gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+                                loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+                                rs = gain / loss
+                                curr_rsi = (100 - (100 / (1 + rs))).iloc[-1]
+                                if curr_rsi < 40: 
+                                    recommended.append({'สินทรัพย์': name, 'ราคาล่าสุด': hist['Close'].iloc[-1], 'RSI': curr_rsi})
+                        except:
+                            pass
+                    if recommended:
+                        st.success("✅ เจอสินทรัพย์ที่น่าสนใจแล้ว!")
+                        st.dataframe(pd.DataFrame(recommended).sort_values(by='RSI').style.format({'ราคาล่าสุด': '{:.2f}', 'RSI': '{:.2f}'}), hide_index=True)
+                    else:
+                        st.info("ตลาดกำลังตึงตัว ยังไม่มีสินทรัพย์ไหนลงมาในโซนน่าช้อนครับ")
+
+        asset_class = st.radio("เลือกประเภทสินทรัพย์ที่ต้องการนำเสนอ:", 
+                               ["🇹🇭 หุ้นไทย", "🇺🇸 หุ้นระดับโลก & ETF", "🛢️ สินทรัพย์ทางเลือก (ทอง, น้ำมัน, จีน)", "🏦 กองทุน SCB & หุ้นกู้"], horizontal=True)
+
+        if asset_class in ["🇹🇭 หุ้นไทย", "🇺🇸 หุ้นระดับโลก & ETF", "🛢️ สินทรัพย์ทางเลือก (ทอง, น้ำมัน, จีน)"]:
+            c1, c2 = st.columns([1, 2])
+            with c1:
+                if asset_class == "🇹🇭 หุ้นไทย":
+                    stock_input = st.selectbox("เลือกหุ้น", ["PTT", "AOT", "KBANK", "CPALL", "ADVANC", "BBL", "SCB", "SCC", "BDMS", "GULF", "DELTA"])
+                    full_symbol = f"{stock_input}.BK"
+                    asset_name = stock_input
+                elif asset_class == "🇺🇸 หุ้นระดับโลก & ETF":
+                    stock_input = st.selectbox("เลือกหุ้น/ETF", ["SPY (S&P 500 ETF)", "QQQ (Nasdaq ETF)", "AAPL", "MSFT", "NVDA", "TSLA"]).split(" ")[0]
+                    full_symbol = stock_input
+                    asset_name = stock_input
+                else:
+                    alt_assets = {"ทองคำ (XAUUSD)": "XAUUSD=X", "น้ำมันดิบ (WTI)": "CL=F", "ETF หุ้นจีน (FXI)": "FXI"}
+                    selected_alt = st.selectbox("เลือกสินทรัพย์:", list(alt_assets.keys()))
+                    full_symbol = alt_assets[selected_alt]
+                    asset_name = selected_alt
+
+            with c2:
+                period = st.select_slider("เลือกมุมมองระยะเวลา", options=["3mo", "6mo", "1y", "3y"], value="6mo")
+
+            if full_symbol:
+                try:
+                    data = yf.Ticker(full_symbol).history(period=period)
+                    if not data.empty:
+                        close_data = data['Close'].squeeze()
+                        current_price = float(close_data.iloc[-1])
+                        recent_high, recent_low = close_data.max(), close_data.min()
+                        drawdown = ((current_price - recent_high) / recent_high) * 100
+                        
+                        m1, m2, m3 = st.columns(3)
+                        m1.metric("ราคาปัจจุบัน", f"{current_price:,.2f}")
+                        m2.metric("จุดสูงสุดรอบที่เลือก (High)", f"{recent_high:,.2f}")
+                        m3.metric("ส่วนลดจากจุดสูงสุด (Drawdown)", f"{drawdown:.2f}%", "น่าทยอยสะสม" if drawdown < -15 else "ราคาตึงตัว", delta_color="off")
+
+                        st.markdown("### 🎙️ บทสนทนาแนะนำลูกค้า (SCB FIRST Pitching)")
+                        if asset_class == "🛢️ สินทรัพย์ทางเลือก (ทอง, น้ำมัน, จีน)":
+                            script = f"พี่คะ นิวขออนุญาตอัปเดตภาพรวมพอร์ตนะคะ ในระดับพอร์ตของลูกค้า SCB FIRST ช่วงนี้สภาวะโลกมีความไม่แน่นอนสูง นิวอยากดูแลให้พอร์ตของพี่มีความเสถียรที่สุด นิวเลยแนะนำให้มี **{asset_name}** ติดพอร์ตไว้เพื่อเป็น 'เบาะกันกระแทก' และกระจายความเสี่ยงค่ะ เผื่อมีปัจจัยมาสะเทือนตลาด พอร์ตของพี่จะได้ยังแข็งแกร่งค่ะ"
+                        elif drawdown < -15:
+                            script = f"สวัสดีค่ะพี่ นิวติดตาม **{asset_name}** ให้นะคะ ตอนนี้ราคาปรับฐานลงมา {abs(drawdown):.1f}% นิวและทีม SCB FIRST ประเมินแล้วว่าเป็น **'โอกาสทองในการทยอยสะสมสินทรัพย์คุณภาพดีในราคาดิสเคาน์'** ค่ะ นิวขออนุญาตจัดสรรแบ่งไม้เข้าให้ดีไหมคะ เพื่อให้ต้นทุนเฉลี่ยของพอร์ตพี่ออกมาคุ้มค่าที่สุดค่ะ"
+                        elif drawdown > -5:
+                            script = f"พี่คะ อัปเดต **{asset_name}** นะคะ ตอนนี้ราคาปรับตัวขึ้นมาใกล้จุดสูงสุดแล้วค่ะ เพื่อวินัยการลงทุนที่ดี นิวแนะนำให้เราทำ **Portfolio Rebalancing** ดีไหมคะ? รินขายทำกำไรล็อคเป้าบางส่วน แล้วพักเงินเข้าสินทรัพย์ปลอดภัยรอจังหวะตลาดปรับฐานค่ะ"
+                        else:
+                            script = f"ภาพรวม **{asset_name}** ยังเกาะเทรนด์การเติบโตได้ดีค่ะพี่ นิวแนะนำให้ **'ถือลงทุนต่อเนื่อง (Let Profit Run)'** ได้สบายใจเลยนะคะ นิวจะช่วยมอนิเตอร์พอร์ตให้อย่างใกล้ชิด ถ้ามีประกาศอะไรสำคัญ นิวรีบต่อสายตรงแจ้งพี่ทันทีเลยค่ะ"
+
+                        st.markdown(f"<div class='script-box'>👩‍💼 <b>นิว:</b><br><br>\"{script}\"</div>", unsafe_allow_html=True)
+
+                        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_width=[0.2, 0.7])
+                        fig.add_trace(go.Candlestick(x=data.index, open=data['Open'].squeeze(), high=data['High'].squeeze(), low=data['Low'].squeeze(), close=close_data), row=1, col=1)
+                        data['EMA50'] = close_data.ewm(span=50, adjust=False).mean()
+                        fig.add_trace(go.Scatter(x=data.index, y=data['EMA50'], line=dict(color='orange', dash='dot')), row=1, col=1)
+                        
+                        if 'Volume' in data.columns and data['Volume'].sum() > 0:
+                            colors = ['red' if r['Open'] - r['Close'] >= 0 else 'green' for i, r in data.iterrows()]
+                            fig.add_trace(go.Bar(x=data.index, y=data['Volume'], marker_color=colors), row=2, col=1)
+                        else:
+                            fig.update_layout(yaxis2=dict(visible=False))
+
+                        fig.update_layout(template="plotly_white", height=500, margin=dict(l=0, r=0, t=10, b=0), showlegend=False)
+                        fig.update_xaxes(rangeslider_visible=False) 
+                        st.plotly_chart(fig, use_container_width=True)
+                except Exception as e:
+                    st.error("ระบบกำลังโหลดข้อมูล กรุณารอสักครู่...")
+
+        elif asset_class == "🏦 กองทุน SCB & หุ้นกู้":
+            st.subheader("📚 คลังข้อมูลกองทุนเด่น & หุ้นกู้ (Pitching Guide)")
+            fund_type = st.selectbox("เลือกประเภทผลิตภัณฑ์ที่ต้องการนำเสนอ:", 
+                                     ["กองทุนหุ้นสหรัฐฯ / S&P500 (SCBS&P500)", 
+                                      "กองทุนเทคโนโลยี / AI (SCBNDQ / SCBSEMI)", 
+                                      "กองทุนหุ้นจีน (SCBCE / SCBCHA)", 
+                                      "กองทุนปันผลหุ้นไทย (SCBDV)", 
+                                      "หุ้นกู้ออกใหม่ (Debentures)"])
+            
+            st.markdown("### 🎙️ สคริปต์เสนอขาย (สำหรับลูกค้าระดับ SCB FIRST)")
+            if fund_type == "กองทุนหุ้นสหรัฐฯ / S&P500 (SCBS&P500)":
+                script = "พี่คะ ถ้าอยากวางรากฐานการเติบโตของพอร์ตให้มั่นคงไปกับเศรษฐกิจระดับโกลบอล นิวแนะนำกองทุน <b>SCBS&P500</b> ค่ะ กองนี้เปรียบเสมือนเครื่องยนต์หลัก (Core Portfolio) ที่ลงทุนใน 500 บริษัทยักษ์ใหญ่ของอเมริกา ถือเป็นการกระจายความเสี่ยงที่ปลอดภัยและผลตอบแทนระยะยาวคาดหวังได้ดีมากค่ะ"
+            elif fund_type == "กองทุนเทคโนโลยี / AI (SCBNDQ / SCBSEMI)":
+                script = "ช่วงนี้เทรนด์ AI มาแรงและจะเป็นปัจจัยขับเคลื่อนโลกใบใหม่เลยค่ะพี่ ถ้ารับความผันผวนได้เพิ่มขึ้นอีกนิด นิวอยากให้พี่จัดสรรเงินบางส่วน (Satellite) มาลงใน <b>SCBNDQ</b> หรือ <b>SCBSEMI</b> ค่ะ เป็นสินทรัพย์แห่งอนาคต นิวช่วยมอนิเตอร์และหาจังหวะเข้าทยอยเก็บให้เลยดีไหมคะ?"
+            elif fund_type == "กองทุนหุ้นจีน (SCBCE / SCBCHA)":
+                script = "พี่คะ ในมุมมองของทีมวิเคราะห์ ตอนนี้ตลาดหุ้นจีนปรับฐานลงมา Valuation ถูกและน่าสนใจมากค่ะ ถือเป็นจังหวะที่ดีในการเข้าเก็บของถูก นิวแนะนำกองทุน <b>SCBCE</b> หรือ <b>SCBCHA</b> ค่อยๆ ทยอยสะสมไว้เป็นพอร์ตระยะยาวเพื่อรับจังหวะเทิร์นอะราวด์ของเศรษฐกิจจีนค่ะ"
+            elif fund_type == "กองทุนปันผลหุ้นไทย (SCBDV)":
+                script = "สำหรับตลาดหุ้นไทย นิวอยากให้พอร์ตของพี่มีความ Defensive ขึ้นมาหน่อยค่ะ นิวแนะนำ <b>SCBDV</b> ที่จะเน้นบริษัทขนาดใหญ่และจ่ายปันผลสม่ำเสมอ เพื่อเป็นการสร้าง Passive Income กระแสเงินสดเข้ามาเรื่อยๆ ระหว่างที่เรารอจังหวะตลาดฟื้นตัวค่ะ"
+            elif fund_type == "หุ้นกู้ออกใหม่ (Debentures)":
+                script = "พี่คะ นิวเห็นพี่มีเงินเย็นก้อนนึงพักอยู่ นิวมี <b>สิทธิพิเศษเฉพาะลูกค้า SCB FIRST</b> ในการจองหุ้นกู้บริษัทชั้นนำระดับ Investment Grade มาเสนอค่ะ จ่ายดอกเบี้ยประจำทุกๆ 3-6 เดือน ได้ผลตอบแทนคุ้มค่ากว่าฝากประจำ นิวล็อคโควตาจองสิทธิ์ผ่านแอปให้พี่เลยนะคะ"
+
+            st.markdown(f"<div class='script-box'>👩‍💼 <b>นิว:</b><br><br>\"{script}\"</div>", unsafe_allow_html=True)
+
+
+    # ------------------------------------
+    # แท็บที่ 2: ข่าวภาษาไทย & เรดาร์ตลาด
+    # ------------------------------------
+    with tab2:
+        colA, colB = st.columns([1.2, 1])
+        with colA:
+            st.markdown("### 🇹🇭 ข่าวสดเศรษฐกิจ & การเมืองโลก (ภาษาไทย)")
+            st.caption("🔥 ดักจับคีย์เวิร์ด: ทรัมป์, น้ำมัน, สงคราม, เศรษฐกิจโลก (ดึงข้อมูลตรงจาก Google News TH)")
+            
+            try:
+                query = urllib.parse.quote("เศรษฐกิจโลก OR ทรัมป์ OR น้ำมัน OR สงคราม")
+                url = f"https://news.google.com/rss/search?q={query}&hl=th&gl=TH&ceid=TH:th"
+                
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
+                response = urllib.request.urlopen(req)
+                xml_data = response.read()
+                root = ET.fromstring(xml_data)
+                
+                count = 0
+                for item in root.findall('./channel/item'):
+                    if count >= 10: 
+                        break
+                    title = item.find('title').text
+                    link = item.find('link').text
+                    pubDate = item.find('pubDate').text
+                    
+                    st.markdown(f"<div class='news-box'><b><a href='{link}' target='_blank' style='color:#4e2a84; text-decoration:none;'>🚨 {title}</a></b><br><small style='color:gray;'>🕒 ประกาศเมื่อ: {pubDate}</small></div>", unsafe_allow_html=True)
+                    count += 1
+            except Exception as e:
+                st.error(f"ไม่สามารถโหลดข่าวภาษาไทยได้ในขณะนี้ กรุณาลองใหม่ภายหลัง ({e})")
+
+        with colB:
+            st.markdown("### 🗺️ แผนที่ความร้อนตลาด (S&P500)")
+            st.caption("เช็กว่าวันนี้ตลาดโลกฝั่งไหนเขียว ฝั่งไหนแดง")
+            components.html(
+                """
+                <div class="tradingview-widget-container">
+                  <div class="tradingview-widget-container__widget"></div>
+                  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>
+                  {
+                  "exchanges": [], "dataSource": "SPX500", "grouping": "sector", "blockSize": "market_cap_basic",
+                  "blockColor": "change", "locale": "th_TH", "colorTheme": "light", "hasTopBar": true, "width": "100%", "height": "650"
+                  }
+                  </script>
+                </div>
+                """, height=650
+            )
+
+    # ------------------------------------
+    # แท็บที่ 3: ค่าเงินบาท, หน้าปัดวิเคราะห์ทอง, ปฏิทิน
+    # ------------------------------------
+    with tab3:
+        colX, colY = st.columns(2)
+        with colX:
+            st.markdown("### 💱 ค่าเงินบาท (USD/THB)")
+            st.caption("สำคัญมากเวลากระทบยอดกำไรขาดทุนของกองทุนต่างประเทศและทองคำ")
+            components.html(
+                """
+                <div class="tradingview-widget-container">
+                  <div class="tradingview-widget-container__widget"></div>
+                  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                  {
+                  "symbol": "FX_IDC:THBUSD", "width": "100%", "height": "300", "locale": "th_TH",
+                  "dateRange": "1M", "colorTheme": "light", "isTransparent": false, "autosize": false, "largeChartUrl": ""
+                  }
+                  </script>
+                </div>
+                """, height=300
+            )
+        with colY:
+            st.markdown("### 🧭 หน้าปัดวิเคราะห์ทองคำ (Technical Gauge)")
+            st.caption("เข็มไมล์ AI สรุปสัญญาณ ซื้อ/ขาย ทองคำโลก จากอินดิเคเตอร์ 20 ชนิด")
+            components.html(
+                """
+                <div class="tradingview-widget-container">
+                  <div class="tradingview-widget-container__widget"></div>
+                  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+                  {
+                  "interval": "1D", "width": "100%", "isTransparent": false, "height": "300",
+                  "symbol": "OANDA:XAUUSD", "showIntervalTabs": true, "locale": "th_TH", "colorTheme": "light"
+                  }
+                  </script>
+                </div>
+                """, height=300
+            )
+            
+        st.divider()
+        st.markdown("### 📅 ปฏิทินข่าวเศรษฐกิจ & การแถลงการณ์ (เวลาไทย 🇹🇭)")
+        st.caption("เช็กตารางล่วงหน้าว่า 'ลุงทรัมป์' หรือ 'ประธานเฟด' จะขึ้นโพเดียมแถลงข่าวกี่โมง (สังเกตแถบสีแดง = ข่าวแรง กราฟกระชาก)")
+        components.html(
+            """
+            <div class="tradingview-widget-container">
+              <div class="tradingview-widget-container__widget"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+              {
+              "colorTheme": "light", "isTransparent": false, "width": "100%", "height": "500", "locale": "th_TH",
+              "importanceFilter": "-1,0,1", "currencyFilter": "USD,EUR,CNY,GBP,JPY,THB"
+              }
+              </script>
+            </div>
+            """, height=500, scrolling=True
+        )
+
+# ==========================================
+# โหมดที่ 2: ประกันสุขภาพและชีวิต (FWD) 
+# ==========================================
 elif app_mode == "🛡️ โหมดประกันสุขภาพ/ชีวิต (FWD)":
-    st.title("🛡️ RM New x FWD 🧡")
-    st.write("โหมดประกันพร้อมใช้งาน (เหมือนเดิมครับพี่เอ้)")
+    st.title("🛡️ RM New x FWD 🧡: ออกแบบความอุ่นใจเฉพาะบุคคล")
+
+    with st.container():
+        c1, c2, c3 = st.columns(3)
+        age = c1.number_input("อายุลูกค้า (ปี)", min_value=1, max_value=80, value=35)
+        gender = c2.selectbox("ความหลากหลาย", ["ชาย", "หญิง", "LGBTQ+"])
+        kids = c3.radio("ครอบครัว", ["ไม่มีบุตร", "มีบุตร"])
+        concern = st.selectbox("สิ่งที่ลูกค้ากังวลใจที่สุดในตอนนี้", 
+                               ["กลัวป่วยหนักแล้วเป็นภาระคนอื่น / ค่ารักษาแพง", "จ่ายภาษีเยอะจนเสียดายเงิน", 
+                                "กลัวแก่ไปไม่มีเงินใช้ / อยากเกษียณสบายๆ", "อยากเตรียมมรดกและทุนการศึกษาให้คนข้างหลัง"])
+
+    st.divider()
+    
+    if concern == "กลัวป่วยหนักแล้วเป็นภาระคนอื่น / ค่ารักษาแพง":
+        product = "FWD Precious Care (เหมาจ่ายสุขภาพ)"
+        if kids == "มีบุตร":
+            benefit = "✔️ **ไม่เป็นภาระลูกหลาน**\n✔️ **เข้าถึงแพทย์ผู้เชี่ยวชาญทันที**"
+            script = f"พี่คะ... นิวเข้าใจเลยค่ะว่าคนเป็นแม่ เวลาป่วย สิ่งที่กังวลไม่ใช่ความเจ็บ แต่กังวลว่าเงินเก็บที่ตั้งใจทำมาเพื่อลูก จะต้องหายไปกับค่ารักษา นิวแนะนำ FWD Precious Care นะคะ ให้ FWD รับความเสี่ยงตรงนี้แทน พี่จะได้เอาเงินลงทุนไปต่อยอดอนาคตให้น้องได้อย่างสบายใจค่ะ"
+        else:
+            benefit = "✔️ **เจ็บป่วย ไม่กระทบพอร์ตการลงทุน**\n✔️ **พึ่งพาตัวเองได้ 100% มีศักดิ์ศรี**"
+            script = f"พี่คะ ร่างกายเราคือ 'สินทรัพย์ที่แพงที่สุดและสร้างผลตอบแทนได้ดีที่สุด' นิวอยากให้พี่มี FWD Precious Care ติดไว้เพื่อบริหารความเสี่ยงค่ะ ให้ประกันรับจบค่ารักษา พี่จะได้ใช้ชีวิตอย่างมีอิสระแบบไม่ต้องกังวลเรื่องบิลค่าหมอเลยค่ะ"
+
+    elif concern == "จ่ายภาษีเยอะจนเสียดายเงิน":
+        product = "FWD For Pension / ประกันสะสมทรัพย์ 10/5"
+        benefit = "✔️ **เปลี่ยนบิลภาษี เป็นเงินออมส่วนตัว**\n✔️ **การันตีเงินต้น ไม่ผันผวนตามตลาดหุ้น**"
+        script = f"พี่คะ โดนภาษีไปเยอะไหมคะปีนี้? นิวแอบเสียดายเงินแทนเลยค่ะ นิวมีวิธีเปลี่ยนบิลภาษีที่ต้องจ่ายทิ้ง ให้กลายมาเป็น 'เงินเก็บส่วนตัว' ด้วยออมทรัพย์ของ FWD ค่ะ เป็นการล็อคผลตอบแทนที่ปลอดภัย นิวทำให้ดูนะคะว่าเราจะดึงเงินภาษีคืนมาได้กี่หมื่น"
+
+    elif gender == "LGBTQ+" and concern in ["อยากเตรียมมรดกและทุนการศึกษาให้คนข้างหลัง", "กลัวแก่ไปไม่มีเงินใช้ / อยากเกษียณสบายๆ"]:
+        product = "FWD Unit Linked / FWD Life Protector"
+        benefit = "✔️ **ส่งมอบความมั่งคั่งให้คู่ชีวิตได้ 100%**\n✔️ **ไร้ข้อจำกัดทางกฎหมาย**"
+        script = f"พี่คะ นิวชื่นชมและสนับสนุนความรักของพี่นะคะ แผนความคุ้มครองตัวนี้ **พี่สามารถใส่ชื่อคนรักเป็นผู้รับผลประโยชน์เพื่อส่งมอบความมั่งคั่งได้เลยโดยไม่ต้องมีทะเบียนสมรส** นิวอยากดูแลให้ความรักของพี่มั่นคงในทุกย่างก้าว นิวช่วยวางแผนให้นะคะ"
+
+    elif kids == "มีบุตร" and concern == "อยากเตรียมมรดกและทุนการศึกษาให้คนข้างหลัง":
+        product = "FWD Unit Linked (ประกันควบการลงทุน)"
+        benefit = "✔️ **สร้างเงินสดหลักล้านทันที**\n✔️ **การันตีทุนการศึกษาและคุณภาพชีวิตลูก**"
+        script = f"พี่คะ นิวรู้ว่าพี่ตั้งใจสร้างพอร์ตทั้งหมดนี้ก็เพื่อน้อง แผนนี้คือการเจียดเงินก้อนเล็กๆ มาสร้างหลักประกันเงินสดหลักล้านให้น้องทันที เพื่อเป็นเบาะรองรับและยืนยันว่า ไม่ว่าจะเกิดอะไรขึ้น แผนการศึกษาของลูกจะสำเร็จตามที่พี่วาดไว้แน่นอนค่ะ"
+
+    else:
+        product = "FWD Annuity (ประกันบำนาญ)"
+        benefit = "✔️ **การันตี Cash Flow รายเดือนหลังเกษียณ**\n✔️ **มีอิสระทางการเงินอย่างแท้จริง**"
+        script = f"พี่คะ นิวอยากให้ภาพตอนอายุ 60 ของพี่ คือการตื่นมาจิบกาแฟ ท่องเที่ยว โดยที่มี **'เงินเดือน'** โอนเข้าบัญชีพี่ทุกเดือนจาก FWD เป็น Passive Income ที่การันตีแน่นอน พี่จะได้เกษียณอย่างมีคลาสและสุขใจที่สุด นิวจัดพอร์ตให้ดูนะคะ"
+
+    st.success(f"🏆 **ผลิตภัณฑ์ที่ตอบโจทย์ลูกค้าระดับ FIRST:** {product}")
+    st.info(f"🌟 **สิทธิประโยชน์สูงสุดที่ได้รับ:**\n{benefit}")
+    st.markdown(f"<div class='fwd-box'>👩‍💼 <b>นิว:</b><br><br>\"{script}\"</div>", unsafe_allow_html=True)
