@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 import streamlit.components.v1 as components
 
 # 1. ตั้งค่าหน้าเว็บ
-st.set_page_config(page_title="✨ RM New x Ae 💕 Phi Vic 🐱", layout="wide", page_icon="💜")
+st.set_page_config(page_title="✨ RM New x Ae 💕 P' Vic 🐱", layout="wide", page_icon="💜")
 
 st.markdown("""
     <style>
@@ -156,32 +156,50 @@ if app_mode == "📈 โหมดการลงทุน (Wealth Allocation)":
                     fig.update_xaxes(rangeslider_visible=False) 
                     st.plotly_chart(fig, use_container_width=True)
 
-    # --- ส่วนของปฏิทินข่าวสารเศรษฐกิจ (สำคัญมากสำหรับทอง/น้ำมัน) ---
-    st.divider()
-    st.markdown("### 📅 ปฏิทินข่าวเศรษฐกิจ & การแถลงการณ์ (อัปเดต Real-time เวลาไทย)")
-    st.caption("รวบรวมตารางการประกาศตัวเลขเศรษฐกิจ การแถลงของ Fed และเหตุการณ์สำคัญระดับโลก (สีแดง = ข่าวแรงกระทบกราฟรุนแรง)")
-    
-    # ฝัง Widget ของ TradingView แบบเรียลไทม์
-    components.html(
-        """
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-          {
-          "colorTheme": "light",
-          "isTransparent": false,
-          "width": "100%",
-          "height": "500",
-          "locale": "th_TH",
-          "importanceFilter": "-1,0,1",
-          "currencyFilter": "USD,EUR,CNY,GBP,JPY,THB"
-          }
-          </script>
-        </div>
-        """,
-        height=500,
-        scrolling=True
-    )
+            # --- นี่คือบล็อก except ที่ผมเผลอลบไปรอบที่แล้วครับ ซ่อมให้แล้ว! ---
+            except Exception as e:
+                st.error("ระบบกำลังโหลดข้อมูล กรุณารอสักครู่...")
+
+        # --- ส่วนของปฏิทินข่าวสารเศรษฐกิจ (สำคัญมากสำหรับทอง/น้ำมัน) ---
+        st.divider()
+        st.markdown("### 📅 ปฏิทินข่าวเศรษฐกิจ & การแถลงการณ์ (อัปเดต Real-time เวลาไทย)")
+        st.caption("รวบรวมตารางการประกาศตัวเลขเศรษฐกิจ การแถลงของ Fed และเหตุการณ์สำคัญระดับโลก (สีแดง = ข่าวแรงกระทบกราฟรุนแรง)")
+        
+        # ฝัง Widget ของ TradingView แบบเรียลไทม์
+        components.html(
+            """
+            <div class="tradingview-widget-container">
+              <div class="tradingview-widget-container__widget"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+              {
+              "colorTheme": "light",
+              "isTransparent": false,
+              "width": "100%",
+              "height": "500",
+              "locale": "th_TH",
+              "importanceFilter": "-1,0,1",
+              "currencyFilter": "USD,EUR,CNY,GBP,JPY,THB"
+              }
+              </script>
+            </div>
+            """,
+            height=500,
+            scrolling=True
+        )
+
+    elif asset_class == "🏦 กองทุนรวม SCB & หุ้นกู้":
+        st.subheader("📚 คลังข้อมูลกองทุนเด่น & หุ้นกู้ (Pitching Guide)")
+        fund_type = st.selectbox("เลือกประเภทผลิตภัณฑ์:", ["กองทุนหุ้นจีน (SCBCE / SCBCHA)", "กองทุนหุ้นสหรัฐฯ / S&P500 (SCBS&P500)", "กองทุนเทคโนโลยี / AI (SCBNDQ / SCBSEMI)", "กองทุนปันผลหุ้นไทย (SCBDV)", "หุ้นกู้ออกใหม่ (Debentures)"])
+        
+        st.markdown("### 🎙️ สคริปต์สำหรับ RM นิว")
+        if fund_type == "กองทุนหุ้นจีน (SCBCE / SCBCHA)":
+            st.markdown("""<div class='script-box'>👩‍💼 <b>นิว:</b> "คุณลูกค้าคะ ตอนนี้ตลาดหุ้นจีนปรับฐานลงมาอยู่ในโซน Valuation ที่ถูกมากๆ ถือเป็นโอกาสดีสำหรับเงินเย็นระยะยาวเลยค่ะ นิวแนะนำกองทุน <b>SCBCE (เน้นหุ้นจีน Offshore)</b> หรือ <b>SCBCHA (เน้นหุ้น A-Shares ในประเทศ)</b> ค่อยๆ ทยอยสะสมไม้แรกไว้รับการฟื้นตัวของเศรษฐกิจจีนได้เลยค่ะ"</div>""", unsafe_allow_html=True)
+        elif fund_type == "กองทุนหุ้นสหรัฐฯ / S&P500 (SCBS&P500)":
+            st.markdown("""<div class='script-box'>👩‍💼 <b>นิว:</b> "คุณลูกค้าคะ ถ้าอยากกระจายความเสี่ยงไปเติบโตพร้อมกับเศรษฐกิจโลก นิวแนะนำกองทุน <b>SCBS&P500</b> ค่ะ กองนี้จะลงทุนใน 500 บริษัทที่ใหญ่ที่สุดในอเมริกา ซื้อกองเดียวเหมือนได้เป็นเจ้าของทั้ง Apple, Microsoft, Amazon ระยะยาวเติบโตมั่นคงมากๆ ค่ะ"</div>""", unsafe_allow_html=True)
+        elif fund_type == "กองทุนเทคโนโลยี / AI (SCBNDQ / SCBSEMI)":
+             st.markdown("""<div class='script-box'>👩‍💼 <b>นิว:</b> "ช่วงนี้เทรนด์ AI มาแรงมากๆ ค่ะ ถ้ารับความเสี่ยงได้สูงขึ้นนิดนึง นิวอยากให้แบ่งเงินมาลงใน <b>SCBNDQ</b> หรือ <b>SCBSEMI</b> ค่ะ เป็นสินทรัพย์แห่งอนาคตที่ผลตอบแทนคาดหวังสูงมากๆ ค่ะ"</div>""", unsafe_allow_html=True)
+        elif fund_type == "หุ้นกู้ออกใหม่ (Debentures)":
+             st.markdown("""<div class='script-box'>👩‍💼 <b>นิว:</b> "คุณลูกค้ามีเงินเย็นที่ยังหาที่พักไม่ได้ไหมคะ? นิวมี <b>หุ้นกู้บริษัทชั้นนำระดับ Investment Grade</b> มาเสนอค่ะ จ่ายดอกเบี้ยประจำทุกๆ 3-6 เดือน ผลตอบแทนชนะเงินฝากแน่นอน นิวช่วยทำจองผ่านแอป SCB Easy ให้ได้เลยนะคะ"</div>""", unsafe_allow_html=True)
 
 # ==========================================
 # โหมดที่ 2: ประกันสุขภาพและชีวิต (FWD)
