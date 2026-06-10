@@ -9,7 +9,7 @@ import urllib.parse
 import xml.etree.ElementTree as ET
 
 # 1. ตั้งค่าหน้าเว็บ
-st.set_page_config(page_title="✨ RM New x Ae 💕 Phi Vic 🐱", layout="wide", page_icon="💜")
+st.set_page_config(page_title="✨ RM New x Ae 💕 P'Vic 🐱", layout="wide", page_icon="💜")
 
 st.markdown("""
     <style>
@@ -29,7 +29,7 @@ app_mode = st.sidebar.radio("เลือกโหมดสำหรับให
                             ["📈 โหมดการลงทุน (SCB FIRST Allocation)", "🛡️ โหมดประกันสุขภาพ/ชีวิต (FWD)"])
 
 st.sidebar.divider()
-st.sidebar.caption("👨‍💻 พัฒนาโดย: เอ้ & นิว (มีพี่วิคเหมียว 🐱 คุมระบบ)")
+st.sidebar.caption("👨‍💻 พัฒนาโดย: เอ้ & นิว (มีพี่วิคลูกชาย 🐱 คอยให้กำลังใจ)")
 
 # ==========================================
 # โหมดที่ 1: การลงทุน (Wealth & Investment)
